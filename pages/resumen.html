@@ -96,46 +96,18 @@
               <tr>
                 <th>Id.</th>
                 <th>Nombre</th>
-                <th>Detalle</th>
+                <th>Telefono</th>
+                <th>Otros datos</th>
                 <th>Adeuda</th>
-                <th>Fecha de Compra</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td>1</td>
-                <td>John</td>
-                <td>3 Tazas</td>
-                <td>$128</td>
-                <td>02/12/2016</td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td>Kimsila</td>
-                <td>Mousepad</td>
-                <td>$50</td>
-                <td>05/12/2016</td>
-              </tr>
-              <tr>
-                <td>3</td>
-                <td>Rossye</td>
-                <td>Medallas</td>
-                <td>$5.122</td>
-                <td>13/02/2017</td>
-              </tr>
-              <tr>
-                <td>4</td>
-                <td>Richard</td>
-                <td>Trofeos</td>
-                <td>$5.412</td>
-                <td>25/05/2017</td>
-              </tr>
-              <tr>
-                <td>5</td>
-                <td>Jacob</td>
-                <td>Remera</td>
-                <td>$121</td>
-                <td>23/06/2017</td>
+            <tbody ng-controller="clientController" data-ng-init="updateList()">
+              <tr ng-repeat="cliente in lista">
+                <td>{{cliente.id}}</td>
+                <td>{{cliente.nombre}}</td>
+                <td>{{cliente.telefono}}</td>
+                <td>{{cliente.extra}}</td>
+                <td>$0</td>
               </tr>
             </tbody>
           </table>
