@@ -31,13 +31,6 @@ var menu = [
     ico:'users',
   },
   {
-    enmenu:false,
-    nombre:'Nuevo Cliente',
-    ruta:'/nuevo_clientes',
-    url:'nuevo_clientes.html',
-    ico:'users',
-  },
-  {
     enmenu:true,
     nombre:'Ingreso',
     ruta:'/ingreso',
@@ -67,10 +60,8 @@ var menu = [
   },
   {
     enmenu:false,
-    nombre:'Clientes',
-    ruta:'/clientes/:id',
-    url:'cliente_id.html',
-    ico:'users',
+    ruta:'/cliente/:id',
+    url:'editar_cliente.html',
   },
 ]
 
@@ -89,13 +80,37 @@ app.controller('MenuController', function($scope) {
 });
 
 
-app.controller('clientController', function($scope,$route, $http) {
-        $scope.cliente = {};
-        $scope.cliente.extra = "";
+app.controller('clientController', function($scope,$routeParams, $http) {
+        $scope.form = {};
+        $scope.form.extra = "";
+        $scope.form.activo = '1';
         $scope.lista = {};
+        $scope.cliente = {};
         $scope.clean = function (){
           $scope.message = "";
           $scope.state ="";
+        };
+        $scope.getClient = function(){
+          $http({
+            method: 'GET',
+            url: baseapi+'/cliente/'+$routeParams.id
+          }).then(function successCallback(response) {
+            $scope.cliente = response.data;
+          }, function errorCallback(response) {
+            $scope.cliente = {};
+          });
+        };
+        $scope.active = function(id,val) {
+        $http({
+          method  : 'PATCH',
+          url     : baseapi+'/cliente/'+id,
+          data    : {'activo':val},
+          headers : {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).then(function (data){
+          if (data.data) {
+           location.reload();
+          }
+        });
         };
         $scope.updateList = function (){
           $http({
@@ -111,7 +126,7 @@ app.controller('clientController', function($scope,$route, $http) {
         $http({
           method  : 'POST',
           url     : baseapi+'/cliente',
-          data: $scope.cliente,
+          data: $scope.form,
           headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).then(function (data){
           if (data.data) {
@@ -123,5 +138,23 @@ app.controller('clientController', function($scope,$route, $http) {
           }
         });
         location.reload();
+        };
+        $scope.updateClient = function() {
+        $http({
+          method  : 'PATCH',
+          url     : baseapi+'/cliente/'+$routeParams.id,
+          data: $scope.form,
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).then(function (data){
+
+          if (data.data) {
+           $scope.state = "success";
+           $scope.message = "Cliente modificado correctamente.";
+          } else {
+           $scope.state = "error";
+           $scope.message = "Verifique que los datos sean correctos.";
+          }
+          $scope.message = data;
+        });
         };
     });

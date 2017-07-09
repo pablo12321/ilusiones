@@ -1,20 +1,20 @@
 <?php
 /*
 * Modulo: Cliente
-* Version: 0.1A
+* Version: 0.2
 * Dependencias:
 * --Database.
 *
 * Manejador de clientes.
 */
 class Cliente extends Database {
-	private $id, $nombre, $telefeno,$extra;
+	private $id, $nombre, $telefeno,$extra,$activo;
 	private $table;
 	private $datos = array();
 	public function __construct() {
 		$this->table = "clientes";
 		if(parent::Create($this->table,
-		"id INT UNSIGNED AUTO_INCREMENT,nombre VARCHAR(128),telefono VARCHAR(20),extra TEXT,PRIMARY KEY(id)")){
+		"id INT UNSIGNED AUTO_INCREMENT,nombre VARCHAR(128),telefono VARCHAR(20),extra TEXT,activo INT(1),PRIMARY KEY(id)")){
 			return true;
 		}
 		else{
@@ -32,7 +32,8 @@ class Cliente extends Database {
 			'id' => $this->id,
 			'nombre' => $this->nombre,
 			'telefono' => $this->telefono,
-			'extra' => $this->extra
+			'extra' => $this->extra,
+			'activo' => $this->activo
 		);
 	}
 	public function setId($id){
@@ -42,6 +43,7 @@ class Cliente extends Database {
 			$this->nombre = $this->datos[1];
 			$this->telefono = $this->datos[2];
 			$this->extra = $this->datos[3];
+			$this->extra = $this->datos[4];
 			return true;
 		}
 		else{
@@ -89,12 +91,23 @@ class Cliente extends Database {
 	public function setExtra($value){
 		$this->extra = $value;
 	}
+	public function getActivo(){
+		if($this->extra != null){
+			return $this->extra;
+		}
+		else{
+			return false;
+		}
+	}
+	public function setActivo($value){
+		$this->extra = $value;
+	}
 	public function Save(){
-		return parent::Insert($this->table,array("nombre" => $this->nombre,"telefono" => $this->telefono,"extra" => $this->extra));
+		return parent::Insert($this->table,array("nombre" => $this->nombre,"telefono" => $this->telefono,"extra" => $this->extra,"activo" => $this->activo));
 	}
 	public function Actualizar(){
 		if($this->id != null){
-			return parent::Update($this->table,array("nombre" =>$this->nombre,"telefono" =>$this->telefono,"extra" =>$this->extra),"id",$this->id);
+			return parent::Update($this->table,array("nombre" =>$this->nombre,"telefono" =>$this->telefono,"extra" =>$this->extra,"activo" => $this->activo),"id",$this->id);
 		}
 		else{
 			return false;
