@@ -1,20 +1,20 @@
 <?php
 /*
-* Modulo: Cliente
-* Version: 0.2
+* Modulo: Proveedor
+* Version: 0.1
 * Dependencias:
 * --Database.
 *
 * Manejador de clientes.
 */
-class Cliente extends Database {
-	private $id, $nombre, $telefeno,$extra;
+class Proveedor extends Database {
+	private $id, $nombre, $telefeno,$email,$web,$extra;
 	private $table;
 	private $datos = array();
 	public function __construct() {
-		$this->table = "clientes";
+		$this->table = "proveedores";
 		if(parent::Create($this->table,
-		"id INT UNSIGNED AUTO_INCREMENT,nombre VARCHAR(128),telefono VARCHAR(20),extra TEXT,PRIMARY KEY(id)")){
+		"id INT UNSIGNED AUTO_INCREMENT,nombre VARCHAR(128),telefono VARCHAR(20),email VARCHAR(128),web VARCHAR(128),extra TEXT,PRIMARY KEY(id)")){
 			return true;
 		}
 		else{
@@ -32,6 +32,8 @@ class Cliente extends Database {
 			'id' => $this->id,
 			'nombre' => $this->nombre,
 			'telefono' => $this->telefono,
+			'email' => $this->email,
+			'web' => $this->web,
 			'extra' => $this->extra
 		);
 	}
@@ -41,7 +43,9 @@ class Cliente extends Database {
 		if($this->datos != false){
 			$this->nombre = $this->datos[1];
 			$this->telefono = $this->datos[2];
-			$this->extra = $this->datos[3];
+			$this->email = $this->datos[3];
+			$this->web = $this->datos[4];
+			$this->extra = $this->datos[5];
 			return true;
 		}
 		else{
@@ -78,6 +82,28 @@ class Cliente extends Database {
 	public function setTelefono($value){
 		$this->telefono = $value;
 	}
+	public function getEmail(){
+		if($this->email != null){
+			return $this->email;
+		}
+		else{
+			return false;
+		}
+	}
+	public function setEmail($value){
+		$this->email = $value;
+	}
+	public function getWeb(){
+		if($this->web != null){
+			return $this->web;
+		}
+		else{
+			return false;
+		}
+	}
+	public function setWeb($value){
+		$this->web = $value;
+	}
 	public function getExtra(){
 		if($this->extra != null){
 			return $this->extra;
@@ -90,11 +116,11 @@ class Cliente extends Database {
 		$this->extra = $value;
 	}
 	public function Save(){
-		return parent::Insert($this->table,array("nombre" => $this->nombre,"telefono" => $this->telefono,"extra" => $this->extra));
+		return parent::Insert($this->table,array("nombre" => $this->nombre,"telefono" => $this->telefono,"email" => $this->email,"web" => $this->web,"extra" => $this->extra));
 	}
 	public function Actualizar(){
 		if($this->id != null){
-			return parent::Update($this->table,array("nombre" =>$this->nombre,"telefono" =>$this->telefono,"extra" =>$this->extra),"id",$this->id);
+			return parent::Update($this->table,array("nombre" =>$this->nombre,"telefono" =>$this->telefono,"email" => $this->email,"web" => $this->web,"extra" =>$this->extra),"id",$this->id);
 		}
 		else{
 			return false;

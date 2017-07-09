@@ -1,9 +1,9 @@
 <?php
 header('Content-Type: application/json');
-require_once 'classes/cliente.php';
-$obj = new Cliente();
+require_once 'classes/proveedor.php';
+$obj = new Proveedor();
 if($obj->setId((int) $request->getAttribute('id')))
-  $response->write(json_encode($obj->getArray()));
+  $response->write(json_encode($obj->Eliminar()));
 else
   $response->write(json_encode(false));
 return $response;
