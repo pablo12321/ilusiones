@@ -78,13 +78,13 @@ class Media extends Database {
 								$this->id = $datos[0];
 								$this->ruta = $datos[1];
 								return array($this->getId(),$this->getUrl(), $type);
+							}
 						}
 					}
 				}
 			}
 		}
 	}
-}
 	public function Eliminar(){
 		if($this->id != null){
 			if(parent::Delete($this->table,"id",$this->id)) {

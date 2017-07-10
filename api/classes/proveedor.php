@@ -5,7 +5,7 @@
 * Dependencias:
 * --Database.
 *
-* Manejador de clientes.
+* Manejador de proveedores.
 */
 class Proveedor extends Database {
 	private $id, $nombre, $telefeno,$email,$web,$extra;
@@ -116,11 +116,23 @@ class Proveedor extends Database {
 		$this->extra = $value;
 	}
 	public function Save(){
-		return parent::Insert($this->table,array("nombre" => $this->nombre,"telefono" => $this->telefono,"email" => $this->email,"web" => $this->web,"extra" => $this->extra));
+		return parent::Insert($this->table,array(
+			"nombre" => $this->nombre,
+			"telefono" => $this->telefono,
+			"email" => $this->email,
+			"web" => $this->web,
+			"extra" => $this->extra
+		));
 	}
 	public function Actualizar(){
 		if($this->id != null){
-			return parent::Update($this->table,array("nombre" =>$this->nombre,"telefono" =>$this->telefono,"email" => $this->email,"web" => $this->web,"extra" =>$this->extra),"id",$this->id);
+			return parent::Update($this->table,array(
+				"nombre" =>$this->nombre,
+				"telefono" =>$this->telefono,
+				"email" => $this->email,
+				"web" => $this->web,
+				"extra" =>$this->extra
+			),"id",$this->id);
 		}
 		else{
 			return false;

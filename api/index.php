@@ -49,6 +49,7 @@ $rutas = array(
 foreach ($rutas['get'] as $ruta => $archivo) {
   $app->get($ruta, function (Request $request, Response $response) use ($archivo) {
       include($archivo);
+
   });
 }
 

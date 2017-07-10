@@ -1,5 +1,4 @@
 var baseapi = "http://localhost/api";
-
 var pagesF = "pages/";
 var menu = [
   {
@@ -84,7 +83,50 @@ app.controller('MenuController', function($scope) {
   $scope.items = menu;
 });
 
-
+app.controller('movController', function($scope, $http) {
+  $scope.lista = {};
+  $scope.clean = function (){
+    $scope.message = "";
+    $scope.state = "";
+    $scope.form = {};
+    $scope.form.detalle = "";
+  };
+  $scope.updateList = function (ruta){
+    $http({
+      method: 'GET',
+      url: baseapi+'/'+ruta
+    }).then(function successCallback(response) {
+      $scope.lista = response.data;
+    }, function errorCallback(response) {
+      $scope.lista = {};
+    });
+  };
+  $scope.submitForm = function(tipo) {
+    $scope.form.tipo = tipo;
+    $scope.form.creado = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    $http({
+      method  : 'POST',
+      url     : baseapi+'/movimiento',
+      data: "tipo="+$scope.form.tipo+"&uid="+$scope.form.uid+"&total="+$scope.form.total+"&entregado="+$scope.form.entregado+"&detalle="+$scope.form.detalle+"&creado="+$scope.form.creado,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+    }).then(function (data){
+      if (data.data) {
+        $scope.clean();
+        $scope.state = "success";
+        if(tipo == '1'){
+          $scope.message = "Ingreso registrado correctamente.";
+        }
+        else{
+          $scope.message = "Egreso registrado correctamente.";
+        }
+      }
+      else{
+        $scope.state = "error";
+        $scope.message = "Verifique que los datos sean correctos.";
+      }
+    });
+  };
+});
 app.controller('clientController', function($scope,$routeParams, $http) {
   $scope.obj = {};
   $scope.form = {};
@@ -93,7 +135,7 @@ app.controller('clientController', function($scope,$routeParams, $http) {
     $scope.message = "";
     $scope.state = "";
     $scope.form = {};
-    $scope.form.extra = " ";
+    $scope.form.extra = "";
   };
   $scope.updateObj = function(id){
     $http({
@@ -177,9 +219,9 @@ app.controller('providerController', function($scope,$routeParams,$rootScope, $h
     $scope.message = "";
     $scope.state = "";
     $scope.form = {};
-    $scope.form.email = " ";
-    $scope.form.web = " ";
-    $scope.form.extra = " ";
+    $scope.form.email = "";
+    $scope.form.web = "";
+    $scope.form.extra = "";
 
   };
   $scope.updateObj = function(id){
@@ -235,7 +277,6 @@ app.controller('providerController', function($scope,$routeParams,$rootScope, $h
         $scope.message = "Verifique que los datos sean correctos.";
       }
     });
-
   };
   $scope.updateProvider = function(id = $routeParams.id) {
     $http({

@@ -1,5 +1,4 @@
 <?php
-header('Content-Type: application/json');
 require_once 'classes/cliente.php';
 $obj = new Cliente();
 if($obj->setId((int) $request->getAttribute('id')))

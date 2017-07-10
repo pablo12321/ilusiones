@@ -90,11 +90,19 @@ class Cliente extends Database {
 		$this->extra = $value;
 	}
 	public function Save(){
-		return parent::Insert($this->table,array("nombre" => $this->nombre,"telefono" => $this->telefono,"extra" => $this->extra));
+		return parent::Insert($this->table,array(
+			"nombre" => $this->nombre,
+			"telefono" => $this->telefono,
+			"extra" => $this->extra
+		));
 	}
 	public function Actualizar(){
 		if($this->id != null){
-			return parent::Update($this->table,array("nombre" =>$this->nombre,"telefono" =>$this->telefono,"extra" =>$this->extra),"id",$this->id);
+			return parent::Update($this->table,array(
+				"nombre" =>$this->nombre,
+				"telefono" =>$this->telefono,
+				"extra" =>$this->extra
+			),"id",$this->id);
 		}
 		else{
 			return false;
