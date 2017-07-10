@@ -1,4 +1,4 @@
-var baseapi = "http://localhost/ilusiones";
+var baseapi = "http://localhost/api";
 
 var pagesF = "pages/";
 var menu = [
@@ -86,18 +86,27 @@ app.controller('MenuController', function($scope) {
 
 
 app.controller('clientController', function($scope,$routeParams, $http) {
+  $scope.obj = {};
   $scope.form = {};
-  //$scope.form.extra = "";
   $scope.lista = {};
-
   $scope.clean = function (){
     $scope.message = "";
-    $scope.state ="";
+    $scope.state = "";
+    $scope.form = {};
+    $scope.form.extra = " ";
   };
-  $scope.getClient = function(){
+  $scope.updateObj = function(id){
     $http({
       method: 'GET',
-      url: baseapi+'/cliente/'+$routeParams.id
+      url: baseapi+'/cliente/'+id
+    }).then(function successCallback(response) {
+      $scope.obj = response.data;
+    });
+  };
+  $scope.getClient = function(id = $routeParams.id){
+    $http({
+      method: 'GET',
+      url: baseapi+'/cliente/'+id
     }).then(function successCallback(response) {
       $scope.form = response.data;
     });
@@ -118,7 +127,7 @@ app.controller('clientController', function($scope,$routeParams, $http) {
         method: 'DELETE',
         url: baseapi+'/cliente/'+uid
       }).then(function successCallback(response) {
-        location.reload();
+        $scope.updateList();
       });
     }
   };
@@ -130,45 +139,61 @@ app.controller('clientController', function($scope,$routeParams, $http) {
       headers: {'Content-Type': 'application/x-www-form-urlencoded'}
     }).then(function (data){
       if (data.data) {
+        $scope.clean();
         $scope.state = "success";
         $scope.message = "Cliente cargado correctamente.";
+        $scope.updateList();
       } else {
         $scope.state = "error";
         $scope.message = "Verifique que los datos sean correctos.";
       }
     });
-    location.reload();
+
   };
-  $scope.updateClient = function() {
+  $scope.updateClient = function(id = $routeParams.id) {
     $http({
       method  : 'PATCH',
-      url     : baseapi+'/cliente/'+$routeParams.id,
+      url     : baseapi+'/cliente/'+id,
       data: "nombre="+$scope.form.nombre+"&telefono="+$scope.form.telefono+"&extra="+$scope.form.extra,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'}
     }).then(function (data){
       if (data.data) {
         $scope.state = "success";
         $scope.message = "Cliente actualizado correctamente.";
+        $scope.updateList();
       } else {
         $scope.state = "error";
         $scope.message = "Verifique que los datos sean correctos.";
       }
     });
-    //location.reload();
   };
 });
 
 app.controller('providerController', function($scope,$routeParams,$rootScope, $http) {
+  $scope.obj = {};
   $scope.form = {};
   $scope.lista = {};
   $scope.clean = function (){
     $scope.message = "";
     $scope.state = "";
+    $scope.form = {};
+    $scope.form.email = " ";
+    $scope.form.web = " ";
+    $scope.form.extra = " ";
+
   };
-  $scope.getProvider= function(){
+  $scope.updateObj = function(id){
     $http({
       method: 'GET',
-      url: baseapi+'/proveedor/'+$routeParams.id
+      url: baseapi+'/proveedor/'+id
+    }).then(function successCallback(response) {
+      $scope.obj = response.data;
+    });
+  };
+  $scope.getProvider = function(id = $routeParams.id){
+    $http({
+      method: 'GET',
+      url: baseapi+'/proveedor/'+id
     }).then(function successCallback(response) {
       $scope.form = response.data;
     });
@@ -189,7 +214,7 @@ app.controller('providerController', function($scope,$routeParams,$rootScope, $h
         method: 'DELETE',
         url: baseapi+'/proveedor/'+uid
       }).then(function successCallback(response) {
-        location.reload();
+        $scope.updateList();
       });
     }
   };
@@ -201,9 +226,10 @@ app.controller('providerController', function($scope,$routeParams,$rootScope, $h
       headers: {'Content-Type': 'application/x-www-form-urlencoded'}
     }).then(function (data){
       if (data.data) {
-        /*$scope.state = "success";
-        $scope.message = "Proveedor cargado correctamente.";*/
-        location.reload();
+        $scope.clean();
+        $scope.state = "success";
+        $scope.message = "Proveedor cargado correctamente.";
+        $scope.updateList();
       } else {
         $scope.state = "error";
         $scope.message = "Verifique que los datos sean correctos.";
@@ -211,21 +237,22 @@ app.controller('providerController', function($scope,$routeParams,$rootScope, $h
     });
 
   };
-  $scope.updateProvider = function() {
+  $scope.updateProvider = function(id = $routeParams.id) {
     $http({
       method  : 'PATCH',
-      url     : baseapi+'/proveedor/'+$routeParams.id,
+      url     : baseapi+'/proveedor/'+id,
       data: "nombre="+$scope.form.nombre+"&telefono="+$scope.form.telefono+"&email="+$scope.form.email+"&web="+$scope.form.web+"&extra="+$scope.form.extra,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'}
     }).then(function (data){
       if (data.data) {
         $scope.state = "success";
         $scope.message = "Proveedor actualizado correctamente.";
+        $scope.updateList();
       } else {
         $scope.state = "error";
         $scope.message = "Verifique que los datos sean correctos.";
       }
     });
-    //location.reload();
+
   };
 });

@@ -1,0 +1,202 @@
+<div  ng-controller="providerController">
+  <div class="row">
+    <div class="col-md-12">
+      <h1 class="page-header">
+        Proveedores <small>Lista de clientes y deudas</small>
+      </h1>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Acciones.
+        </div>
+        <div class="panel-body">
+          <div class="row">
+            <div class="col-md-12">
+              <button class="btn btn-primary btn-lg" data-toggle="modal" ng-click="clean()" data-target="#myModal">
+                Agregar proveedor
+              </button>
+              <!-- MODAL CREAR -->
+              <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                      <h4 class="modal-title" id="myModalLabel">Nuevo Proveedor</h4>
+                    </div>
+                    <div class="modal-body">
+                      <form name="proveedorForm" ng-submit="submitForm()" role="form">
+                        <div class="panel-heading">
+                          Rellene todos los campos con los datos solicitados
+                        </div>
+                        <div class="form-group has-{{state}}">
+                          <label class="control-label">{{message}}</label>
+                        </div>
+                        <div class="form-group">
+                          <label>* Nombre</label>
+                          <input name="nombre" autocomplete="off" ng-model="form.nombre" class="form-control">
+                        </div>
+                        <div class="form-group">
+                          <label>* Numero de Telefono</label>
+                          <input name="telefono"  autocomplete="off" ng-model="form.telefono" class="form-control">
+                        </div>
+                        <div class="form-group">
+                          <label>Correo Electrónico</label>
+                          <input name="email"  autocomplete="off" ng-model="form.email" class="form-control">
+                        </div>
+                        <div class="form-group">
+                          <label>Pagina web</label>
+                          <input name="web"  autocomplete="off" ng-model="form.web"  class="form-control">
+                        </div>
+                        <div class="form-group">
+                          <label>Datos Extras</label>
+                          <textarea name="extra" ng-model="form.extra" class="form-control" rows="3"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="reset" class="btn btn-default" ng-click="clean()">Limpiar Formulario</button>
+                          <button type="submit" class="btn btn-primary">Agregar proveedor</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- FIN MODAL CREAR -->
+              <!-- MODAL VER -->
+              <div class="modal fade" id="modalVer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                      <h4 class="modal-title" id="myModalLabel">Proveedor: {{obj.nombre}}</h4>
+                    </div>
+                    <div class="modal-body">
+                      <div class="form-group">
+                        <label>Nombre</label>
+                        <input disabled ng-value="obj.nombre" class="form-control">
+                      </div>
+                      <div class="form-group">
+                        <label>Numero de Telefono</label>
+                        <input disabled ng-value="obj.telefono" class="form-control">
+                      </div>
+                      <div class="form-group">
+                        <label>Correo Electrónico</label>
+                        <input disabled ng-value="obj.email" class="form-control">
+                      </div>
+                      <div class="form-group">
+                        <label>Pagina web</label>
+                        <input disabled ng-value="obj.web" class="form-control">
+                      </div>
+                      <div class="form-group">
+                        <label>Datos Extras</label>
+                        <textarea  disabled ng-value="obj.extra" class="form-control" rows="3"></textarea>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- FIN MODAL VER -->
+              <!-- MODAL EDITAR -->
+              <div class="modal fade" id="modalEditar" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                      <h4 class="modal-title" id="myModalLabel">Editar Proveedor</h4>
+                    </div>
+                    <div class="modal-body">
+                      <form name="proveedorForm" ng-submit="updateProvider(form.id)" role="form">
+                        <div class="panel-heading">
+                          Rellene todos los campos con los datos solicitados
+                        </div>
+                        <div class="form-group has-{{state}}">
+                          <label class="control-label">{{message}}</label>
+                        </div>
+                        <div class="form-group">
+                          <label>* Nombre</label>
+                          <input name="nombre" autocomplete="off" ng-model="form.nombre" ng-value="form.nombre"  class="form-control">
+                        </div>
+                        <div class="form-group">
+                          <label>* Numero de Telefono</label>
+                          <input name="telefono"  autocomplete="off" ng-model="form.telefono" ng-value="form.telefono" class="form-control">
+                        </div>
+                        <div class="form-group">
+                          <label>Correo Electrónico</label>
+                          <input name="email"  autocomplete="off" ng-model="form.email" ng-value="form.email" ng-init="form.email = ''" class="form-control">
+                        </div>
+                        <div class="form-group">
+                          <label>Pagina web</label>
+                          <input name="web"  autocomplete="off" ng-model="form.web" ng-value="form.web" ng-init="form.web = ''" class="form-control">
+                        </div>
+                        <div class="form-group">
+                          <label>Datos Extras</label>
+                          <textarea name="extra" ng-model="form.extra" ng-init="form.extra = ''" ng-value="form.extra" class="form-control" rows="3"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-default" ng-click="clean()">Limpiar Formulario</button>
+                          <button type="submit" class="btn btn-primary">Actualizar proveedor</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- FIN MODAL EDITAR -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <div class="row">
+            <div class="col-lg-4">
+              <div class="form-group input-group">
+                <input ng-model="search" ng-init="search = ''" type="text" placeholder="Buscar proveedor" class="form-control">
+                <span class="input-group-btn">
+                  <button class="btn btn-default" ng-click="search = ''" type="button"><i class="fa fa-times"></i>
+                  </button>
+                  <button class="btn btn-default" type="button"><i class="fa fa-search"></i>
+                  </button>
+                </span>
+              </div>
+            </div>
+            <div class="col-lg-12">
+              <div class="table-responsive">
+                <table class="table table-striped table-bordered table-hover">
+                  <thead>
+                    <tr>
+                      <th>Acciones</th>
+                      <th>Nombre</th>
+                      <th>Telefono</th>
+                      <th>Correo Electrónico</th>
+                      <th>Se debe</th>
+                    </tr>
+                  </thead>
+                  <tbody data-ng-init="updateList()">
+                    <tr ng-repeat="proveedor in lista" ng-if="proveedor.nombre.toUpperCase().indexOf(search.toUpperCase()) !== -1 || proveedor.telefono.toUpperCase().indexOf(search.toUpperCase()) !== -1 || proveedor.email.toUpperCase().indexOf(search.toUpperCase()) !== -1">
+                      <td>
+                        <button class="btn btn-success btn-sm" ng-click="updateObj(proveedor.id);clean()" data-toggle="modal" data-target="#modalVer">
+                          Ver
+                        </button>
+                        <button class="btn btn-primary btn-sm" ng-click="getProvider(proveedor.id);clean()" data-toggle="modal" data-target="#modalEditar">
+                          Editar
+                        </button>
+                        <a ng-click="eliminar(proveedor.id)" class="btn btn-danger btn-sm">Eliminar</a>
+                      </td>
+                      <td>{{proveedor.nombre}}</td>
+                      <td>{{proveedor.telefono}}</td>
+                      <td>{{proveedor.email}}</td>
+                      <td>$0</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
