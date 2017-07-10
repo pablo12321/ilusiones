@@ -14,6 +14,9 @@
               <button class="btn btn-primary btn-lg" data-toggle="modal" ng-click="clean()" data-target="#myModal">
                 Agregar proveedor
               </button>
+              <button class="btn btn-success btn-lg" ng-init="updateList()" ng-click="updateList()">
+                Actualizar Información
+              </button>
               <!-- MODAL CREAR -->
               <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
@@ -175,7 +178,7 @@
                     </tr>
                   </thead>
                   <tbody data-ng-init="updateList()">
-                    <tr ng-repeat="proveedor in lista" ng-if="proveedor.nombre.toUpperCase().indexOf(search.toUpperCase()) !== -1 || proveedor.telefono.toUpperCase().indexOf(search.toUpperCase()) !== -1 || proveedor.email.toUpperCase().indexOf(search.toUpperCase()) !== -1">
+                    <tr ng-repeat="proveedor in lista" ng-if="proveedor.nombre.toUpperCase().indexOf(search.toUpperCase()) !== -1 || proveedor.telefono.toUpperCase().indexOf(search.toUpperCase()) !== -1 || proveedor.email.toUpperCase().indexOf(search.toUpperCase()) !== -1" ng-init="setDeuda(proveedor)">
                       <td>
                         <button class="btn btn-success btn-sm" ng-click="updateObj(proveedor.id);clean()" data-toggle="modal" data-target="#modalVer">
                           Ver
@@ -188,7 +191,9 @@
                       <td>{{proveedor.nombre}}</td>
                       <td>{{proveedor.telefono}}</td>
                       <td>{{proveedor.email}}</td>
-                      <td>$0</td>
+                      <td ng-if="proveedor.deuda > 0" class="bg-color-red">${{proveedor.deuda}}</td>
+                      <td ng-if="proveedor.deuda < 0" class="bg-color-green">${{-proveedor.deuda}}</td>
+                      <td ng-if="proveedor.deuda == 0" class="bg-color-blue">${{proveedor.deuda}}</td>
                     </tr>
                   </tbody>
                 </table>

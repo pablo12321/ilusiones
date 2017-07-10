@@ -131,6 +131,7 @@ app.controller('clientController', function($scope,$routeParams, $http) {
   $scope.obj = {};
   $scope.form = {};
   $scope.lista = {};
+  var movimientos = {};
   $scope.clean = function (){
     $scope.message = "";
     $scope.state = "";
@@ -153,7 +154,34 @@ app.controller('clientController', function($scope,$routeParams, $http) {
       $scope.form = response.data;
     });
   };
+  $scope.getMovs = function(){
+    $http({
+      method: 'GET',
+      url: baseapi+'/movimiento'
+    }).then(function successCallback(response) {
+
+    });
+  };
+  $scope.setDeuda = function(client){
+    var deuda = 0;
+    Array.from(movimientos).forEach(function(mov){
+      if(mov.tipo == '1' && mov.uid == client.id){
+        deuda = parseInt(deuda) + parseInt(mov.total);
+        deuda = parseInt(deuda) - parseInt(mov.entregado);
+      }
+    });
+    if(isNaN(deuda)){
+      deuda = 0;
+    }
+    client.deuda = deuda;
+  };
   $scope.updateList = function (){
+    $http({
+      method: 'GET',
+      url: baseapi+'/movimiento'
+    }).then(function successCallback(response) {
+      movimientos = response.data;
+    });
     $http({
       method: 'GET',
       url: baseapi+'/cliente'
@@ -162,6 +190,7 @@ app.controller('clientController', function($scope,$routeParams, $http) {
     }, function errorCallback(response) {
       $scope.lista = {};
     });
+
   };
   $scope.eliminar = function(uid){
     if(confirm("¿Esta seguro que quiere eliminar el cliente?")){
@@ -215,6 +244,7 @@ app.controller('providerController', function($scope,$routeParams,$rootScope, $h
   $scope.obj = {};
   $scope.form = {};
   $scope.lista = {};
+  var movimientos = {};
   $scope.clean = function (){
     $scope.message = "";
     $scope.state = "";
@@ -223,6 +253,19 @@ app.controller('providerController', function($scope,$routeParams,$rootScope, $h
     $scope.form.web = "";
     $scope.form.extra = "";
 
+  };
+  $scope.setDeuda = function(client){
+    var deuda = 0;
+    Array.from(movimientos).forEach(function(mov){
+      if(mov.tipo == '0' && mov.uid == client.id){
+        deuda = parseInt(deuda) + parseInt(mov.total);
+        deuda = parseInt(deuda) - parseInt(mov.entregado);
+      }
+    });
+    if(isNaN(deuda)){
+      deuda = 0;
+    }
+    client.deuda = deuda;
   };
   $scope.updateObj = function(id){
     $http({
@@ -241,6 +284,12 @@ app.controller('providerController', function($scope,$routeParams,$rootScope, $h
     });
   };
   $scope.updateList = function (){
+    $http({
+      method: 'GET',
+      url: baseapi+'/movimiento'
+    }).then(function successCallback(response) {
+      movimientos = response.data;
+    });
     $http({
       method: 'GET',
       url: baseapi+'/proveedor'
