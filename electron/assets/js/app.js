@@ -56,16 +56,6 @@ var menu = [
     ruta:'/caja',
     url:'caja.html',
     ico:'cart-arrow-down',
-  },
-  {
-    enmenu:false,
-    ruta:'/cliente/:id',
-    url:'editar_cliente.html',
-  },
-  {
-    enmenu:false,
-    ruta:'/proveedor/:id',
-    url:'editar_proveedor.html',
   }
 ]
 
@@ -82,8 +72,7 @@ app.config(function($routeProvider) {
 app.controller('MenuController', function($scope) {
   $scope.items = menu;
 });
-
-app.controller('movController', function($scope, $http) {
+app.controller('ingegController', function($scope, $http) {
   $scope.lista = {};
   $scope.clean = function (){
     $scope.message = "";
@@ -127,6 +116,7 @@ app.controller('movController', function($scope, $http) {
     });
   };
 });
+/*---- Clientes ----*/
 app.controller('clientController', function($scope,$routeParams, $http) {
   $scope.obj = {};
   $scope.form = {};
@@ -239,7 +229,7 @@ app.controller('clientController', function($scope,$routeParams, $http) {
     });
   };
 });
-
+/*---- Proveedores ----*/
 app.controller('providerController', function($scope,$routeParams,$rootScope, $http) {
   $scope.obj = {};
   $scope.form = {};
@@ -343,6 +333,70 @@ app.controller('providerController', function($scope,$routeParams,$rootScope, $h
         $scope.message = "Verifique que los datos sean correctos.";
       }
     });
-
+  };
+});
+/*---- Movimientos ----*/
+app.controller('movController', function($scope,$routeParams, $http) {
+  $scope.obj = {};
+  $scope.form = {};
+  $scope.lista = {};
+  $scope.clean = function (){
+    $scope.message = "";
+    $scope.state = "";
+    $scope.form = {};
+    $scope.form.extra = "";
+  };
+  $scope.updateObj = function(mov){
+    $scope.obj = mov;
+  };
+  $scope.getMov = function(mov){
+    $scope.form = mov;
+  };
+  $scope.updateList = function (){
+    $http({
+      method: 'GET',
+      url: baseapi+'/movimiento'
+    }).then(function successCallback(response) {
+      $scope.lista = Array.from(response.data);
+      $scope.lista.forEach(function(mov){
+        var ruta = "proveedor";
+        if(mov.tipo == 1){
+          ruta = "cliente";
+        }
+        $http({
+          method: 'GET',
+          url: baseapi+'/'+ruta+'/'+mov.uid
+        }).then(function successCallback(responsee) {
+          mov.cliente = responsee.data;
+        });
+      });
+    });
+  };
+  $scope.eliminar = function(uid){
+    if(confirm("¿Esta seguro que quiere eliminar el movimiento?")){
+      $http({
+        method: 'DELETE',
+        url: baseapi+'/movimiento/'+uid
+      }).then(function successCallback(response) {
+        $scope.updateList();
+      });
+    }
+  };
+  $scope.updateMov = function(id = $routeParams.id) {
+    $http({
+      method  : 'PATCH',
+      url     : baseapi+'/movimiento/'+id,
+      data: "total="+$scope.form.total+"&entregado="+$scope.form.entregado+"&detalle="+$scope.form.detalle,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+    }).then(function (data){
+      if (data.data) {
+        $scope.state = "success";
+        $scope.message = "Movimiento actualizado correctamente.";
+        $scope.updateList();
+      } else {
+        $scope.state = "error";
+        $scope.message = "Verifique que los datos sean correctos.";
+      }
+    });
   };
 });

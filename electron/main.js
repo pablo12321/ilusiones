@@ -7,11 +7,13 @@ const url = require('url')
 let win
 
 function createWindow(){
-  win = new BrowserWindow({width:800,height:600})
+  win = new BrowserWindow({width:1024,height:768,name: "Ilusiones"})
   win.loadURL(url.format({
     pathname: path.join(__dirname,'index.html'),
     protocol: 'file',
     slashes: true
   }));
+  win.maximize();
+
 }
 app.on('ready',createWindow)

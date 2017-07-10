@@ -11,10 +11,10 @@
         <div class="panel-body">
           <div class="row">
             <div class="col-md-12">
-              <button class="btn btn-primary btn-lg" data-toggle="modal" ng-click="clean()" data-target="#myModal">
+              <button class="btn btn-primary" data-toggle="modal" ng-click="clean()" data-target="#myModal">
                 Agregar proveedor
               </button>
-              <button class="btn btn-success btn-lg" ng-init="updateList()" ng-click="updateList()">
+              <button class="btn btn-success" ng-init="updateList()" ng-click="updateList()">
                 Actualizar Información
               </button>
               <!-- MODAL CREAR -->
@@ -28,7 +28,7 @@
                     <div class="modal-body">
                       <form name="proveedorForm" ng-submit="submitForm()" role="form">
                         <div class="panel-heading">
-                          Rellene todos los campos con los datos solicitados
+                          Rellene todos los campos con los datos solicitados.
                         </div>
                         <div class="form-group has-{{state}}">
                           <label class="control-label">{{message}}</label>
