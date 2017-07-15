@@ -6,16 +6,35 @@
   </div>
 </div>
 <!-- /. ROW  -->
-
-<div class="row">
-  <div class="col-md-3 col-sm-12 col-xs-12">
-    <div class="panel panel-primary text-center no-boder bg-color-blue">
-      <div class="panel-body">
-        <i class="fa fa-shopping-cart fa-5x"></i>
-        <h3>52,160 </h3>
+<div class="row" ng-controller="movController" ng-init="fecha = 'dia';getResumen(fecha)">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      Acciones.
+    </div>
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-md-12">
+          <button class="btn btn-primary" ng-click="fecha = 'dia';getResumen(fecha)">
+            Info del día
+          </button>
+          <button class="btn btn-primary" ng-click="fecha = 'mes';getResumen(fecha)">
+            Info del mes
+          </button>
+          <button class="btn btn-primary" ng-click="fecha = 'año';getResumen(fecha)">
+            Info del año
+          </button>
+        </div>
       </div>
-      <div class="panel-footer back-footer-blue">
-        Ventas hoy
+    </div>
+  </div>
+  <div class="col-md-3 col-sm-12 col-xs-12">
+    <div class="panel panel-primary text-center no-boder bg-color-brown">
+      <div class="panel-body">
+        <i class="fa fa-usd fa-5x"></i>
+        <h3>${{resumen.total}}</h3>
+      </div>
+      <div class="panel-footer back-footer-brown">
+        Ganancia en el {{fecha}}
       </div>
     </div>
   </div>
@@ -23,10 +42,10 @@
     <div class="panel panel-primary text-center no-boder bg-color-green">
       <div class="panel-body">
         <i class="fa fa-plus fa-5x"></i>
-        <h3>$8,457</h3>
+        <h3>${{resumen.ingresos}}</h3>
       </div>
       <div class="panel-footer back-footer-green">
-        Ingresos hoy
+        Ingresos en el {{fecha}}
       </div>
     </div>
   </div>
@@ -34,57 +53,34 @@
     <div class="panel panel-primary text-center no-boder bg-color-red">
       <div class="panel-body">
         <i class="fa fa-minus fa-5x"></i>
-        <h3>$2,457</h3>
+        <h3>${{resumen.egresos}}</h3>
       </div>
       <div class="panel-footer back-footer-red">
-        Egresos hoy
+        Egresos en el {{fecha}}
       </div>
     </div>
   </div>
   <div class="col-md-3 col-sm-12 col-xs-12">
-    <div class="panel panel-primary text-center no-boder bg-color-brown">
+    <div class="panel panel-primary text-center no-boder bg-color-blue">
       <div class="panel-body">
-        <i class="fa fa-percent fa-5x"></i>
-        <h3>87</h3>
+        <i class="fa fa-shopping-cart fa-5x"></i>
+        <h3>{{resumen.ventas}}</h3>
       </div>
-      <div class="panel-footer back-footer-brown">
-        Ganancia mensual
-
+      <div class="panel-footer back-footer-blue">
+        Ventas en el {{fecha}}
       </div>
     </div>
   </div>
 </div>
-
 <div class="row">
-  <div class="col-md-4 col-sm-12 col-xs-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        Avisos
-      </div>
-      <div class="panel-body">
-        <div class="list-group">
-          <a href="#" class="list-group-item">
-            <span class="badge back-footer-red">15 unidades</span>
-            <i class="fa fa-fw fa-truck"></i> Poco stock de Tazas plasticas
-          </a>
-          <a href="#" class="list-group-item">
-            <span class="badge back-footer-green">Hace 36 minutos</span>
-            <i class="fa fa-fw fa-globe"></i> Pablo Androetto Completo un pago
-          </a>
-          <a href="#" class="list-group-item">
-            <span class="badge back-footer-blue">Hace 1 hora</span>
-            <i class="fa fa-fw fa-user"></i> Nuevo cliente registrado 'Pablo Androetto'
-          </a>
-        </div>
-        <div class="text-right">
-          <a href="#">Ver todos <i class="fa fa-arrow-circle-right"></i></a>
-        </div>
-      </div>
-    </div>
-
+  <div class="col-md-12">
+    <h1 class="page-header">
+      Deudas <small>Clientes y proveedores</small>
+    </h1>
   </div>
-  <div class="col-md-8 col-sm-12 col-xs-12">
-
+</div>
+<div class="row">
+  <div class="col-md-6 col-sm-12 col-xs-12">
     <div class="panel panel-default">
       <div class="panel-heading">
         Clientes deudores
@@ -102,18 +98,48 @@
               </tr>
             </thead>
             <tbody ng-controller="clientController" data-ng-init="updateList()">
-              <tr ng-repeat="cliente in lista">
+              <tr ng-repeat="cliente in lista" ng-if="cliente.estado == 'd'">
                 <td>{{cliente.id}}</td>
                 <td>{{cliente.nombre}}</td>
                 <td>{{cliente.telefono}}</td>
                 <td>{{cliente.extra}}</td>
-                <td>$0</td>
+                <td class="bg-color-red">${{cliente.deuda}}</td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
     </div>
-
+  </div>
+  <div class="col-md-6 col-sm-12 col-xs-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Deudas a proveedores
+      </div>
+      <div class="panel-body">
+        <div class="table-responsive">
+          <table class="table table-striped table-bordered table-hover">
+            <thead>
+              <tr>
+                <th>Id.</th>
+                <th>Nombre</th>
+                <th>Telefono</th>
+                <th>Otros datos</th>
+                <th>Adeuda</th>
+              </tr>
+            </thead>
+            <tbody ng-controller="providerController" data-ng-init="updateList()">
+              <tr ng-repeat="cliente in lista" ng-if="cliente.estado == 'd'">
+                <td>{{cliente.id}}</td>
+                <td>{{cliente.nombre}}</td>
+                <td>{{cliente.telefono}}</td>
+                <td>{{cliente.extra}}</td>
+                <td class="bg-color-red">${{cliente.deuda}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
