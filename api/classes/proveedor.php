@@ -8,10 +8,13 @@
 * Manejador de proveedores.
 */
 class Proveedor extends Database {
-	private $id, $nombre, $telefeno,$email,$web,$extra;
+	private $id, $nombre, $telefeno,$email,$web,$extra,$deuda,$estado;
 	private $table;
 	private $datos = array();
+	private $array = array();
 	public function __construct() {
+		$this->deuda = 0;
+		$this->estado = 'n';
 		$this->table = "proveedores";
 		if(parent::Create($this->table,
 		"id INT UNSIGNED AUTO_INCREMENT,nombre VARCHAR(128),telefono VARCHAR(20),email VARCHAR(128),web VARCHAR(128),extra TEXT,PRIMARY KEY(id)")){
@@ -24,18 +27,43 @@ class Proveedor extends Database {
 	public function getTable(){
 		return $this->table;
 	}
+	public function getQuery($campo,$valor){
+		$comp = "=";
+		if(substr($valor,0,1) == "$"){
+			$comp = "like";
+			$valor = "%".substr($valor,1)."%";
+		}
+		return $this->setDatos(parent::SelectAll("*",$this->table,$campo,$valor,$comp));
+	}
+	public function setDatos($client,$simple = true){
+		require_once 'classes/movimiento.php';
+		$obj = new Movimiento();
+		if($simple){
+			return $obj->getDeuda($client,"0");
+		}
+		else{
+			$nuevo = array();
+			if (is_array($client) || is_object($client))
+			{
+				foreach ($client as $value) {
+					$nuevo[$value['id']] = $obj->getDeuda($value,"0");
+				}
+			}
+			return $nuevo;
+		}
+	}
 	public function getAll(){
-		return parent::SelectAll("*",$this->table);
+		return $this->setDatos(parent::SelectAll("*",$this->table),false);
 	}
 	public function getArray(){
-		return array(
+		$this->array = $this->setDatos(array(
 			'id' => $this->id,
 			'nombre' => $this->nombre,
 			'telefono' => $this->telefono,
 			'email' => $this->email,
 			'web' => $this->web,
-			'extra' => $this->extra
-		);
+			'extra' => $this->extra));
+		return $this->array;
 	}
 	public function setId($id){
 		$this->id = $id;

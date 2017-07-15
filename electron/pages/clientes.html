@@ -14,9 +14,26 @@
               <button class="btn btn-primary" ng-click="clean()" data-toggle="modal" data-target="#myModal">
                 Agregar cliente
               </button>
-              <button class="btn btn-success" ng-init="updateList()" ng-click="updateList()">
+              <button class="btn btn-success" ng-click="updateList()">
                 Actualizar Información
               </button>
+              <button ng-click="filtro.estado = '';search = ''" class="btn btn-danger">Quitar filtros</button>
+              <div class="btn-group">
+                <button ng-init="filtro.estado = ''" data-toggle="dropdown" class="btn btn-primary dropdown-toggle">Estado<span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                  <li><a ng-click="filtro.estado = ''">Todos</a></li>
+                  <li><a ng-click="filtro.estado = 'd'">Deudas</a></li>
+                  <li><a ng-click="filtro.estado = 'f'">A favor</a></li>
+                  <li><a ng-click="filtro.estado = 'n'">Completados</a></li>
+                </ul>
+              </div>
+              <p>
+                <span ng-if="filtro.estado == ''">Mostrando: Todos</span>
+                <span ng-if="filtro.estado == 'd'">Mostrando: Deudas</span>
+                <span ng-if="filtro.estado == 'f'">Mostrando: A favor</span>
+                <span ng-if="filtro.estado == 'n'">Mostrando: Completado</span>
+                <span ng-if="search != ''">, Coincidente con "{{search}}"</span>
+              </p>
               <!-- MODAL CREAR -->
               <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
@@ -147,26 +164,30 @@
                   <thead>
                     <tr>
                       <th>Acciones</th>
+                      <th>Id.</th>
                       <th>Nombre</th>
                       <th>Telefono</th>
                       <th>Adeuda</th>
                     </tr>
                   </thead>
                   <tbody ng-init="updateList()">
-                    <tr ng-repeat="cliente in lista" ng-if="cliente.nombre.toUpperCase().indexOf(search.toUpperCase()) !== -1 || cliente.telefono.toUpperCase().indexOf(search.toUpperCase()) !== -1" ng-init="setDeuda(cliente)">
-                      <td>
+                    <tr ng-repeat="cliente in lista" ng-if="(cliente.nombre.toUpperCase().indexOf(search.toUpperCase()) !== -1 ||cliente.id.toUpperCase().indexOf(search.toUpperCase()) !== -1 || cliente.telefono.toUpperCase().indexOf(search.toUpperCase()) !== -1) && cliente.estado.indexOf(filtro.estado) !== -1">
+                      <td width="200px">
                         <button class="btn btn-success btn-sm" ng-click="updateObj(cliente.id);clean()" data-toggle="modal" data-target="#modalVer">
                           Ver
                         </button>
                         <button class="btn btn-primary btn-sm" ng-click="getClient(cliente.id);clean()" data-toggle="modal" data-target="#modalEditarC">
                           Editar
                         </button>
-                        <a ng-click="eliminar(cliente.id)" class="btn btn-danger btn-sm">Eliminar</a>
+                        <button ng-click="eliminar(cliente.id)" class="btn btn-danger btn-sm">
+                          Eliminar
+                        </button>
                       </td>
+                      <td>{{cliente.id}}</td>
                       <td>{{cliente.nombre}}</td>
                       <td>{{cliente.telefono}}</td>
-                      <td ng-if="cliente.deuda > 0" class="bg-color-red">${{cliente.deuda}}</td>
-                      <td ng-if="cliente.deuda < 0" class="bg-color-green">${{-cliente.deuda}}</td>
+                      <td ng-if="cliente.deuda > 0" class="bg-color-red">${{cliente.deuda}} (Debe)</td>
+                      <td ng-if="cliente.deuda < 0" class="bg-color-green">${{-cliente.deuda}} (A favor)</td>
                       <td ng-if="cliente.deuda == 0" class="bg-color-blue">${{cliente.deuda}}</td>
                     </tr>
                   </tbody>

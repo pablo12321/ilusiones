@@ -17,6 +17,23 @@
               <button class="btn btn-success" ng-init="updateList()" ng-click="updateList()">
                 Actualizar Información
               </button>
+              <button ng-click="filtro.estado = '';search = ''" class="btn btn-danger">Quitar filtros</button>
+              <div class="btn-group">
+                <button ng-init="filtro.estado = ''" data-toggle="dropdown" class="btn btn-primary dropdown-toggle">Estado<span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                  <li><a ng-click="filtro.estado = ''">Todos</a></li>
+                  <li><a ng-click="filtro.estado = 'd'">Deudas</a></li>
+                  <li><a ng-click="filtro.estado = 'f'">A favor</a></li>
+                  <li><a ng-click="filtro.estado = 'n'">Completados</a></li>
+                </ul>
+              </div>
+              <p>
+                <span ng-if="filtro.estado == ''">Mostrando: Todos</span>
+                <span ng-if="filtro.estado == 'd'">Mostrando: Deudas</span>
+                <span ng-if="filtro.estado == 'f'">Mostrando: A favor</span>
+                <span ng-if="filtro.estado == 'n'">Mostrando: Completado</span>
+                <span ng-if="search != ''">, Coincidente con "{{search}}"</span>
+              </p>
               <!-- MODAL CREAR -->
               <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
@@ -171,6 +188,7 @@
                   <thead>
                     <tr>
                       <th>Acciones</th>
+                      <th>Id.</th>
                       <th>Nombre</th>
                       <th>Telefono</th>
                       <th>Correo Electrónico</th>
@@ -178,21 +196,24 @@
                     </tr>
                   </thead>
                   <tbody data-ng-init="updateList()">
-                    <tr ng-repeat="proveedor in lista" ng-if="proveedor.nombre.toUpperCase().indexOf(search.toUpperCase()) !== -1 || proveedor.telefono.toUpperCase().indexOf(search.toUpperCase()) !== -1 || proveedor.email.toUpperCase().indexOf(search.toUpperCase()) !== -1" ng-init="setDeuda(proveedor)">
-                      <td>
+                    <tr ng-repeat="proveedor in lista" ng-if="(proveedor.nombre.toUpperCase().indexOf(search.toUpperCase()) !== -1 || proveedor.email.toUpperCase().indexOf(search.toUpperCase()) !== -1 || proveedor.id.toUpperCase().indexOf(search.toUpperCase()) !== -1 || proveedor.telefono.toUpperCase().indexOf(search.toUpperCase()) !== -1) && proveedor.estado.indexOf(filtro.estado) !== -1">
+                      <td width="200px">
                         <button class="btn btn-success btn-sm" ng-click="updateObj(proveedor.id);clean()" data-toggle="modal" data-target="#modalVer">
                           Ver
                         </button>
                         <button class="btn btn-primary btn-sm" ng-click="getProvider(proveedor.id);clean()" data-toggle="modal" data-target="#modalEditar">
                           Editar
                         </button>
-                        <a ng-click="eliminar(proveedor.id)" class="btn btn-danger btn-sm">Eliminar</a>
+                        <button ng-click="eliminar(proveedor.id)" class="btn btn-danger btn-sm">
+                          Eliminar
+                        </button>
                       </td>
+                      <td>{{proveedor.id}}</td>
                       <td>{{proveedor.nombre}}</td>
                       <td>{{proveedor.telefono}}</td>
                       <td>{{proveedor.email}}</td>
-                      <td ng-if="proveedor.deuda > 0" class="bg-color-red">${{proveedor.deuda}}</td>
-                      <td ng-if="proveedor.deuda < 0" class="bg-color-green">${{-proveedor.deuda}}</td>
+                      <td ng-if="proveedor.deuda > 0" class="bg-color-red">${{proveedor.deuda}} (Se debe)</td>
+                      <td ng-if="proveedor.deuda < 0" class="bg-color-green">${{-proveedor.deuda}} (A favor)</td>
                       <td ng-if="proveedor.deuda == 0" class="bg-color-blue">${{proveedor.deuda}}</td>
                     </tr>
                   </tbody>

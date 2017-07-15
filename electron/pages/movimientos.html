@@ -14,30 +14,33 @@
               <button class="btn btn-success" ng-init="updateList()" ng-click="updateList()">
                 Actualizar Información
               </button>
+              <button ng-click="filtro.tipo = '';filtro.estado = '';search = ''" class="btn btn-danger">Quitar filtros</button>
               <div class="btn-group">
                 <button ng-init="filtro.tipo = ''" data-toggle="dropdown" class="btn btn-primary dropdown-toggle">Tipo<span class="caret"></span></button>
                 <ul class="dropdown-menu">
-                <li><a ng-click="filtro.tipo = ''">Todos</a></li>
-                <li><a ng-click="filtro.tipo = 1">Ingresos</a></li>
-                <li><a ng-click="filtro.tipo = 0">Egresos</a></li>
+                  <li><a ng-click="filtro.tipo = ''">Todos</a></li>
+                  <li><a ng-click="filtro.tipo = 1">Ingresos</a></li>
+                  <li><a ng-click="filtro.tipo = 0">Egresos</a></li>
                 </ul>
               </div>
               <div class="btn-group">
                 <button ng-init="filtro.estado = ''" data-toggle="dropdown" class="btn btn-primary dropdown-toggle">Estado<span class="caret"></span></button>
                 <ul class="dropdown-menu">
-                <li><a ng-click="filtro.estado = ''">Todos</a></li>
-                <li><a ng-click="filtro.estado = 'd'">Deudas</a></li>
-                <li><a ng-click="filtro.estado = 'f'">A favor</a></li>
-                <li><a ng-click="filtro.estado = 'n'">Completados</a></li>
+                  <li><a ng-click="filtro.estado = ''">Todos</a></li>
+                  <li><a ng-click="filtro.estado = 'd'">Deudas</a></li>
+                  <li><a ng-click="filtro.estado = 'f'">A favor</a></li>
+                  <li><a ng-click="filtro.estado = 'n'">Completados</a></li>
                 </ul>
               </div>
-              <span ng-if="filtro.tipo === ''">Mostrando: Todo</span>
-              <span ng-if="filtro.tipo === 1">Mostrando: Ingresos</span>
-              <span ng-if="filtro.tipo === 0">Mostrando: Egreso</span>
-              <span ng-if="filtro.estado == 'd'">, Deudas</span>
-              <span ng-if="filtro.estado == 'f'">, A favor</span>
-              <span ng-if="filtro.estado == 'n'">, Completados</span>
-              <span ng-if="search != ''">, Coincidente con "{{search}}"</span>
+              <p>
+                <span ng-if="filtro.tipo === ''">Mostrando: Todo</span>
+                <span ng-if="filtro.tipo === 1">Mostrando: Ingresos</span>
+                <span ng-if="filtro.tipo === 0">Mostrando: Egreso</span>
+                <span ng-if="filtro.estado == 'd'">, Deudas</span>
+                <span ng-if="filtro.estado == 'f'">, A favor</span>
+                <span ng-if="filtro.estado == 'n'">, Completados</span>
+                <span ng-if="search != ''">, Coincidente con "{{search}}"</span>
+              </p>
               <!-- MODAL VER -->
               <div class="modal fade" id="modalVer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
@@ -60,7 +63,7 @@
                       <div class="form-group">
                         <label ng-if="obj.tipo == 1">Cliente:</label>
                         <label ng-if="obj.tipo == 0">Proveedor:</label>
-                        <input disabled ng-value="obj.cliente.nombre" class="form-control">
+                        <input disabled ng-value="obj.cliente" class="form-control">
                       </div>
                       <div class="form-group">
                         <label>Total a pagar:</label>
@@ -103,7 +106,7 @@
                         <div class="form-group">
                           <label ng-if="form.tipo == 1">Cliente:</label>
                           <label ng-if="form.tipo == 0">Proveedor:</label>
-                          <input disabled ng-value="form.cliente.nombre" class="form-control">
+                          <input disabled ng-value="form.cliente" class="form-control">
                         </div>
                         <div class="form-group">
                           <label>Total a pagar:</label>
@@ -163,23 +166,25 @@
                     </tr>
                   </thead>
                   <tbody ng-init="updateList()">
-                    <tr ng-repeat="mov in lista" ng-if="(mov.detalle.toUpperCase().indexOf(search.toUpperCase()) !== -1 || mov.cliente.nombre.toUpperCase().indexOf(search.toUpperCase()) !== -1 || mov.creado.toUpperCase().indexOf(search.toUpperCase()) !== -1 ) && mov.estado.indexOf(filtro.estado) !== -1 && mov.tipo.indexOf(filtro.tipo) !== -1 ">
-                      <td>
+                    <tr ng-repeat="mov in lista" ng-if="(mov.detalle.toUpperCase().indexOf(search.toUpperCase()) !== -1 ||mov.uid.toUpperCase().indexOf(search.toUpperCase()) !== -1 || mov.cliente.toUpperCase().indexOf(search.toUpperCase()) !== -1 || mov.creado.toUpperCase().indexOf(search.toUpperCase()) !== -1 ) && mov.estado.indexOf(filtro.estado) !== -1 && mov.tipo.indexOf(filtro.tipo) !== -1 ">
+                      <td width="200px">
                         <button class="btn btn-success btn-sm" ng-click="updateObj(mov)" data-toggle="modal" data-target="#modalVer">
                           Ver
                         </button>
                         <button class="btn btn-primary btn-sm" ng-click="getMov(mov)" data-toggle="modal" data-target="#modalEditarC">
                           Editar
                         </button>
-                        <a ng-click="eliminar(mov.id)" class="btn btn-danger btn-sm">Eliminar</a>
+                        <button ng-click="eliminar(mov.id)" class="btn btn-danger btn-sm">
+                          Eliminar
+                        </button>
                       </td>
-                      <td> {{mov.creado}}</td>
+                      <td>{{mov.creado}}</td>
                       <td>{{mov.detalle}}</td>
                       <td>${{mov.total}}</td>
                       <td ng-if="mov.estado == 'd'" class="bg-color-red">${{mov.entregado}}</td>
                       <td ng-if="mov.estado == 'f'" class="bg-color-green">${{mov.entregado}}</td>
                       <td ng-if="mov.estado == 'n'" class="bg-color-blue">${{mov.entregado}}</td>
-                      <td>{{mov.cliente.nombre}}</td>
+                      <td>{{mov.cliente}}({{mov.uid}})</td>
                     </tr>
                   </tbody>
                 </table>

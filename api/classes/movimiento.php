@@ -1,20 +1,21 @@
 <?php
 /*
 * Modulo: Movimiento
-* Version: 0.2
+* Version: 0.4
 * Dependencias:
 * --Database.
-*
+* --Cliente.
+* --Proveedor.
 * Manejador de movimientos.
 */
 class Movimiento extends Database {
-	private $id, $tipo, $uid,$total,$entregado,$detalle,$creado,$estado;
+	private $id, $tipo, $uid,$total,$entregado,$detalle,$creado,$estado,$cliente;//estado y cliente no está en db
 	private $table;
 	private $datos = array();
 	public function __construct() {
 		$this->table = "movimientos";
 		if(parent::Create($this->table,
-		"id INT UNSIGNED AUTO_INCREMENT,tipo INT(1),uid INT(5),total FLOAT(12,2),entregado FLOAT(12,2), detalle TEXT, creado DATETIME, estado CHAR(1),PRIMARY KEY(id)")){
+		"id INT UNSIGNED AUTO_INCREMENT,tipo INT(1),uid INT(5),total FLOAT(12,2),entregado FLOAT(12,2), detalle TEXT, creado DATETIME,PRIMARY KEY(id)")){
 			return true;
 		}
 		else{
@@ -24,8 +25,85 @@ class Movimiento extends Database {
 	public function getTable(){
 		return $this->table;
 	}
+	public function getDeuda($cliente,$tipo){
+		$cliente['deuda'] = 0;
+		$movs = $this->getQuery("uid",$cliente['id']);
+		if (is_array($movs) || is_object($movs))
+		{
+			foreach ($movs as $mov) {
+				if($mov['tipo'] == $tipo){
+					$cliente['deuda'] += (float) $mov['total'] - (float) $mov['entregado'];
+				}
+			}
+		}
+		$cliente['deuda'] = $cliente['deuda'].'';
+		if($cliente['deuda']>0){
+			$cliente['estado'] = 'd';
+		}
+		elseif ($cliente['deuda']<0) {
+			$cliente['estado'] = 'f';
+		}
+		else{
+			$cliente['estado'] = 'n';
+		}
+		return $cliente;
+	}
+	public function getQuery($campo,$valor){
+		$comp = "=";
+		if(substr($valor,0,1) == "$"){
+			$comp = "like";
+	    $valor = "%".substr($valor,1)."%";
+	  }
+		return $this->setDatos(parent::SelectAll("*",$this->table,$campo,$valor,$comp));
+	}
+	public function setDatos($array = null){
+		if($array == null){
+			if($this->total<$this->entregado){
+				$this->estado = 'f';
+			}
+			elseif ($this->total>$this->entregado) {
+				$this->estado = 'd';
+			}
+			else{
+				$this->estado = 'n';
+			}
+		}
+		else{
+			$datos = array();
+			foreach ($array as $value) {
+				if($value['total']<$value['entregado']){
+					$value['estado'] = 'f';
+				}
+				elseif ($value['total']>$value['entregado']) {
+					$value['estado'] = 'd';
+				}
+				else{
+					$value['estado'] = 'n';
+				}
+				if($value['tipo'] == "1"){
+					require_once 'classes/cliente.php';
+					$obj = new Cliente();
+					$obj->setId($value['uid']);
+					$value['cliente'] = $obj->getNombre();
+					if(!$value['cliente'])
+						$value['cliente'] ="Cliente borrado";
+				}
+				else{
+					require_once 'classes/proveedor.php';
+					$obj = new Proveedor();
+					$obj->setId($value['uid']);
+					$value['cliente'] = $obj->getNombre();
+					if(!$value['cliente'])
+						$value['cliente'] ="Proveedor borrado";
+				}
+
+				$datos[(int)$value['id']] = $value;
+			}
+			return $datos;
+		}
+	}
 	public function getAll(){
-		return parent::SelectAll("*",$this->table);
+		return $this->setDatos(parent::SelectAll("*",$this->table));
 	}
 	public function getArray(){
 		return array(
@@ -49,7 +127,7 @@ class Movimiento extends Database {
 			$this->entregado = $this->datos[4];
 			$this->detalle = $this->datos[5];
 			$this->creado = $this->datos[6];
-			$this->estado = $this->datos[7];
+			$this->setDatos();
 			return true;
 		}
 		else{
@@ -96,7 +174,7 @@ class Movimiento extends Database {
 	}
 	public function setTotal($value){
 		$this->total = $value;
-		$this->setEstado();
+		$this->setDatos();
 	}
 	public function getEntregado(){
 		if($this->entregado != null){
@@ -108,7 +186,7 @@ class Movimiento extends Database {
 	}
 	public function setEntregado($value){
 		$this->entregado = $value;
-		$this->setEstado();
+		$this->setDatos();
 	}
 	public function getDetalle(){
 		if($this->detalle != null){
@@ -132,16 +210,6 @@ class Movimiento extends Database {
 	public function setCreado($value){
 		$this->creado = $value;
 	}
-	public function setEstado(){
-		if($this->total > $this->entregado){
-			$this->estado = 'd';
-		}
-		elseif($this->total < $this->entregado){
-			$this->estado = 'f';
-		}else{
-			$this->estado = 'n';
-		}
-	}
 	public function Save(){
 		return parent::Insert($this->table,array(
 			'tipo' => $this->tipo,
@@ -149,8 +217,7 @@ class Movimiento extends Database {
 			'total' => $this->total,
 			'entregado' => $this->entregado,
 			'detalle' => $this->detalle,
-			'creado' => $this->creado,
-			'estado' => $this->estado
+			'creado' => $this->creado
 		));
 	}
 	public function Actualizar(){
@@ -161,8 +228,7 @@ class Movimiento extends Database {
 				'total' => $this->total,
 				'entregado' => $this->entregado,
 				'detalle' => $this->detalle,
-				'creado' => $this->creado,
-				'estado' => $this->estado
+				'creado' => $this->creado
 			),"id",$this->id);
 		}
 		else{

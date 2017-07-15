@@ -17,7 +17,11 @@ $rutas = array(
     '/proveedor' => 'views/proveedor/get.php',
     '/proveedor/{id}' => 'views/proveedor/getid.php',
     '/movimiento' => 'views/movimiento/get.php',
-    '/movimiento/{id}' => 'views/movimiento/getid.php'
+    '/movimiento/{id}' => 'views/movimiento/getid.php',
+    '/cliente/{campo}/{valor}' => 'views/cliente/get.php',
+    '/producto/{campo}/{valor}' => 'views/producto/get.php',
+    '/proveedor/{campo}/{valor}' => 'views/proveedor/get.php',
+    '/movimiento/{campo}/{valor}' => 'views/movimiento/get.php'
     ),
   'post' => array(
     '/cliente' => 'views/cliente/post.php',
