@@ -1,4 +1,4 @@
-var baseapi = "http://localhost/api";
+﻿var baseapi = "http://localhost/api";
 var test;
 var pagesF = "pages/";
 function apiError(){
@@ -158,11 +158,8 @@ app.controller('clientController', function($scope,$routeParams, $http) {
     }).then(function successCallback(response) {
       $scope.lista = response.data;
       test = response.data;
-<<<<<<< HEAD
     }, function errorCallback(response) {
       apiError();
-=======
->>>>>>> ce0a9d20465665fcc5c7e67fcff22109c9fb803a
     });
   };
   $scope.eliminar = function(uid){
