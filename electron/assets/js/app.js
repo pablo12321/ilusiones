@@ -1,61 +1,65 @@
 var baseapi = "http://localhost/api";
+var test;
 var pagesF = "pages/";
+function apiError(){
+  window.location.href = "#!/error";
+  $('.modal-backdrop').hide();
+}
 var menu = [
   {
-    enmenu:true,
-    nombre:'Resumen',
+    nombre:'Inicio',
     ruta:'/',
+    url:'inicio.html',
+    ico:'home',
+  },
+  {
+    nombre:'Resumen',
+    ruta:'/resumen',
     url:'resumen.html',
     ico:'dashboard',
   },
   {
-    enmenu:true,
     nombre:'Productos',
     ruta:'/productos',
     url:'productos.html',
     ico:'trophy',
   },
   {
-    enmenu:true,
     nombre:'Proveedores',
     ruta:'/proveedores',
     url:'proveedores.html',
     ico:'id-card',
   },
   {
-    enmenu:true,
     nombre:'Clientes',
     ruta:'/clientes',
     url:'clientes.html',
     ico:'users',
   },
   {
-    enmenu:true,
     nombre:'Ingreso',
     ruta:'/ingreso',
     url:'ingreso.html',
     ico:'plus',
   },
   {
-    enmenu:true,
     nombre:'Egreso',
     ruta:'/egreso',
     url:'egreso.html',
     ico:'minus',
   },
   {
-    enmenu:true,
     nombre:'Movimientos',
     ruta:'/movimientos',
     url:'movimientos.html',
     ico:'list',
   },
   {
-    enmenu:true,
-    nombre:'Caja',
-    ruta:'/caja',
-    url:'caja.html',
-    ico:'cart-arrow-down',
+    inmenu:false,
+    nombre:'Error',
+    ruta:'/error',
+    url:'error.html',
+    ico:'list',
   }
 ]
 
@@ -87,18 +91,18 @@ app.controller('ingegController', function($scope, $http) {
     }).then(function successCallback(response) {
       $scope.lista = response.data;
     }, function errorCallback(response) {
-      $scope.lista = {};
+      apiError();
     });
   };
   $scope.submitForm = function(tipo) {
     $scope.form.tipo = tipo;
-    $scope.form.creado = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    $scope.form.creado = ""
     $http({
       method  : 'POST',
       url     : baseapi+'/movimiento',
       data: "tipo="+$scope.form.tipo+"&uid="+$scope.form.uid+"&total="+$scope.form.total+"&entregado="+$scope.form.entregado+"&detalle="+$scope.form.detalle+"&creado="+$scope.form.creado,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-    }).then(function (data){
+    }).then(function successCallback(data){
       if (data.data) {
         $scope.clean();
         $scope.state = "success";
@@ -113,6 +117,8 @@ app.controller('ingegController', function($scope, $http) {
         $scope.state = "error";
         $scope.message = "Verifique que los datos sean correctos.";
       }
+    }, function errorCallback(response) {
+      apiError();
     });
   };
 });
@@ -121,7 +127,6 @@ app.controller('clientController', function($scope,$routeParams, $http) {
   $scope.obj = {};
   $scope.form = {};
   $scope.lista = {};
-  var movimientos = {};
   $scope.clean = function (){
     $scope.message = "";
     $scope.state = "";
@@ -142,45 +147,20 @@ app.controller('clientController', function($scope,$routeParams, $http) {
       url: baseapi+'/cliente/'+id
     }).then(function successCallback(response) {
       $scope.form = response.data;
+    }, function errorCallback(response) {
+      apiError();
     });
-  };
-  $scope.getMovs = function(){
-    $http({
-      method: 'GET',
-      url: baseapi+'/movimiento'
-    }).then(function successCallback(response) {
-
-    });
-  };
-  $scope.setDeuda = function(client){
-    var deuda = 0;
-    Array.from(movimientos).forEach(function(mov){
-      if(mov.tipo == '1' && mov.uid == client.id){
-        deuda = parseInt(deuda) + parseInt(mov.total);
-        deuda = parseInt(deuda) - parseInt(mov.entregado);
-      }
-    });
-    if(isNaN(deuda)){
-      deuda = 0;
-    }
-    client.deuda = deuda;
   };
   $scope.updateList = function (){
-    $http({
-      method: 'GET',
-      url: baseapi+'/movimiento'
-    }).then(function successCallback(response) {
-      movimientos = response.data;
-    });
     $http({
       method: 'GET',
       url: baseapi+'/cliente'
     }).then(function successCallback(response) {
       $scope.lista = response.data;
+      test = response.data;
     }, function errorCallback(response) {
-      $scope.lista = {};
+      apiError();
     });
-
   };
   $scope.eliminar = function(uid){
     if(confirm("¿Esta seguro que quiere eliminar el cliente?")){
@@ -189,6 +169,8 @@ app.controller('clientController', function($scope,$routeParams, $http) {
         url: baseapi+'/cliente/'+uid
       }).then(function successCallback(response) {
         $scope.updateList();
+      }, function errorCallback(response) {
+        apiError();
       });
     }
   };
@@ -198,7 +180,7 @@ app.controller('clientController', function($scope,$routeParams, $http) {
       url     : baseapi+'/cliente',
       data: $scope.form,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-    }).then(function (data){
+    }).then(function successCallback(data){
       if (data.data) {
         $scope.clean();
         $scope.state = "success";
@@ -208,6 +190,8 @@ app.controller('clientController', function($scope,$routeParams, $http) {
         $scope.state = "error";
         $scope.message = "Verifique que los datos sean correctos.";
       }
+    }, function errorCallback(response) {
+      apiError();
     });
 
   };
@@ -217,7 +201,7 @@ app.controller('clientController', function($scope,$routeParams, $http) {
       url     : baseapi+'/cliente/'+id,
       data: "nombre="+$scope.form.nombre+"&telefono="+$scope.form.telefono+"&extra="+$scope.form.extra,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-    }).then(function (data){
+    }).then(function successCallback(data){
       if (data.data) {
         $scope.state = "success";
         $scope.message = "Cliente actualizado correctamente.";
@@ -226,6 +210,8 @@ app.controller('clientController', function($scope,$routeParams, $http) {
         $scope.state = "error";
         $scope.message = "Verifique que los datos sean correctos.";
       }
+    }, function errorCallback(response) {
+      apiError();
     });
   };
 });
@@ -234,7 +220,6 @@ app.controller('providerController', function($scope,$routeParams,$rootScope, $h
   $scope.obj = {};
   $scope.form = {};
   $scope.lista = {};
-  var movimientos = {};
   $scope.clean = function (){
     $scope.message = "";
     $scope.state = "";
@@ -242,7 +227,6 @@ app.controller('providerController', function($scope,$routeParams,$rootScope, $h
     $scope.form.email = "";
     $scope.form.web = "";
     $scope.form.extra = "";
-
   };
   $scope.setDeuda = function(client){
     var deuda = 0;
@@ -263,6 +247,8 @@ app.controller('providerController', function($scope,$routeParams,$rootScope, $h
       url: baseapi+'/proveedor/'+id
     }).then(function successCallback(response) {
       $scope.obj = response.data;
+    }, function errorCallback(response) {
+      apiError();
     });
   };
   $scope.getProvider = function(id = $routeParams.id){
@@ -271,22 +257,18 @@ app.controller('providerController', function($scope,$routeParams,$rootScope, $h
       url: baseapi+'/proveedor/'+id
     }).then(function successCallback(response) {
       $scope.form = response.data;
+    }, function errorCallback(response) {
+      apiError();
     });
   };
   $scope.updateList = function (){
-    $http({
-      method: 'GET',
-      url: baseapi+'/movimiento'
-    }).then(function successCallback(response) {
-      movimientos = response.data;
-    });
     $http({
       method: 'GET',
       url: baseapi+'/proveedor'
     }).then(function successCallback(response) {
       $scope.lista = response.data;
     }, function errorCallback(response) {
-      $scope.lista = {};
+      apiError();
     });
   };
   $scope.eliminar = function(uid){
@@ -296,6 +278,8 @@ app.controller('providerController', function($scope,$routeParams,$rootScope, $h
         url: baseapi+'/proveedor/'+uid
       }).then(function successCallback(response) {
         $scope.updateList();
+      }, function errorCallback(response) {
+        apiError();
       });
     }
   };
@@ -305,7 +289,7 @@ app.controller('providerController', function($scope,$routeParams,$rootScope, $h
       url     : baseapi+'/proveedor',
       data: $scope.form,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-    }).then(function (data){
+    }).then(function successCallback(data){
       if (data.data) {
         $scope.clean();
         $scope.state = "success";
@@ -315,6 +299,8 @@ app.controller('providerController', function($scope,$routeParams,$rootScope, $h
         $scope.state = "error";
         $scope.message = "Verifique que los datos sean correctos.";
       }
+    }, function errorCallback(response) {
+      apiError();
     });
   };
   $scope.updateProvider = function(id = $routeParams.id) {
@@ -323,7 +309,7 @@ app.controller('providerController', function($scope,$routeParams,$rootScope, $h
       url     : baseapi+'/proveedor/'+id,
       data: "nombre="+$scope.form.nombre+"&telefono="+$scope.form.telefono+"&email="+$scope.form.email+"&web="+$scope.form.web+"&extra="+$scope.form.extra,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-    }).then(function (data){
+    }).then(function successCallback(data){
       if (data.data) {
         $scope.state = "success";
         $scope.message = "Proveedor actualizado correctamente.";
@@ -332,6 +318,8 @@ app.controller('providerController', function($scope,$routeParams,$rootScope, $h
         $scope.state = "error";
         $scope.message = "Verifique que los datos sean correctos.";
       }
+    }, function errorCallback(response) {
+      apiError();
     });
   };
 });
@@ -352,24 +340,52 @@ app.controller('movController', function($scope,$routeParams, $http) {
   $scope.getMov = function(mov){
     $scope.form = mov;
   };
+  $scope.getResumen = function(fecha){
+    var movs = {};
+    var subint = 0;
+    switch (fecha) {
+      case "dia":
+        subint = 10;
+        break;
+      case "mes":
+        subint = 7;
+        break;
+      case "año":
+        subint = 4;
+        break;
+    }
+    $http({
+      method: 'GET',
+      url: baseapi+'/movimiento/creado/$'+(new Date().toISOString().slice(0, 19).replace('T', ' ')).substr(0,subint)
+    }).then(function successCallback(response) {
+      movs = response.data;
+      var datos = {};
+      datos.ventas = 0;
+      datos.ingresos = 0;
+      datos.egresos = 0;
+      angular.forEach(movs, function(mov) {
+        if(mov.tipo == "1"){
+          datos.ventas++;
+          datos.ingresos += parseFloat(mov.entregado);
+        }
+        else{
+          datos.egresos += parseFloat(mov.entregado);
+        }
+      });
+      datos.total = datos.ingresos - datos.egresos;
+      $scope.resumen = datos;
+    }, function errorCallback(response) {
+      apiError();
+    });
+  };
   $scope.updateList = function (){
     $http({
       method: 'GET',
       url: baseapi+'/movimiento'
     }).then(function successCallback(response) {
-      $scope.lista = Array.from(response.data);
-      $scope.lista.forEach(function(mov){
-        var ruta = "proveedor";
-        if(mov.tipo == 1){
-          ruta = "cliente";
-        }
-        $http({
-          method: 'GET',
-          url: baseapi+'/'+ruta+'/'+mov.uid
-        }).then(function successCallback(responsee) {
-          mov.cliente = responsee.data;
-        });
-      });
+      $scope.lista = response.data;
+    }, function errorCallback(response) {
+      apiError();
     });
   };
   $scope.eliminar = function(uid){
@@ -379,6 +395,8 @@ app.controller('movController', function($scope,$routeParams, $http) {
         url: baseapi+'/movimiento/'+uid
       }).then(function successCallback(response) {
         $scope.updateList();
+      }, function errorCallback(response) {
+        apiError();
       });
     }
   };
@@ -388,7 +406,7 @@ app.controller('movController', function($scope,$routeParams, $http) {
       url     : baseapi+'/movimiento/'+id,
       data: "total="+$scope.form.total+"&entregado="+$scope.form.entregado+"&detalle="+$scope.form.detalle,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-    }).then(function (data){
+    }).then(function successCallback (data){
       if (data.data) {
         $scope.state = "success";
         $scope.message = "Movimiento actualizado correctamente.";
@@ -397,6 +415,8 @@ app.controller('movController', function($scope,$routeParams, $http) {
         $scope.state = "error";
         $scope.message = "Verifique que los datos sean correctos.";
       }
+    }, function errorCallback(response) {
+      apiError();
     });
   };
 });

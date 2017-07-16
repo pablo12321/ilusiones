@@ -28,7 +28,7 @@
     <nav class="navbar-default navbar-side" role="navigation">
       <div class="sidebar-collapse">
         <ul ng-controller="MenuController" class="nav" id="main-menu">
-          <li ng-repeat="item in items" ng-if="item.enmenu">
+          <li ng-repeat="item in items" ng-if="item.inmenu != false">
             <a href="#!{{item.ruta}}"><i class="fa fa-{{item.ico}}"></i> {{item.nombre}}</a>
           </li>
         </ul>
